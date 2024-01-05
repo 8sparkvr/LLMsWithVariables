@@ -3,8 +3,107 @@ let useAI = true;
 let OpenAI = null;
 let openai = null;
 
-function readVariables(aiVariables) {
+function parseValue(value) {
+    
+    let type = 'string'
+    const isNum = isNumeric(value);
 
+    if (isNum) {
+        try {
+            if (!isNaN(parseInt(aiVars[key]))) {
+                value = parseInt(aiVars[key]);
+                type = 'int'
+            }
+        } catch(e) {}
+        if (type != 'int') {
+            try {
+                if (!isNaN(parseFloat(aiVars[key]))) {
+                    value = parseFloat(aiVars[key]);
+                    type = 'float'
+                }
+            } catch(e) {}
+        }
+    }
+
+    return value;
+}
+
+function readVariables(aiMessage, aiVariables, socket) {
+
+    let numVarsFound = 0;
+    try {
+        let aiVars = JSON.parse(aiMessage);
+        console.log("aiVars", aiVars);
+        for (key in aiVars)
+        {
+            let found = false;
+            for (let i = 0; i < aiVariables.length; i++)
+            {
+                console.log("key == aiVariables[i].name" + key + " == " + aiVariables[i].name);
+                if (key == aiVariables[i].name) {
+                    aiVariables[i].value = aiVars[key];
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                let type = 'string';
+                let value = aiVars[key];
+                
+                const isNum = isNumeric(value);
+
+                if (isNum) {
+                    try {
+                        if (!isNaN(parseInt(aiVars[key]))) {
+                            value = parseInt(aiVars[key]);
+                            type = 'int'
+                        }
+                    } catch(e) {}
+                    if (type != 'int') {
+                        try {
+                            if (!isNaN(parseFloat(aiVars[key]))) {
+                                value = parseFloat(aiVars[key]);
+                                type = 'float'
+                            }
+                        } catch(e) {}
+                    }
+                }
+
+                aiVariables.push({name: key, type: type, value: value, defaultValue: value});
+            }
+            numVarsFound++;
+        }
+        
+        if (numVarsFound == 0) {
+            for (let i = 0; i < aiVariables.length; i++) {
+                let foundIndex = aiMessage.indexOf(aiVariables[i].name);
+                if (foundIndex != -1) {
+                    foundIndex += aiVariables[i].name.length + 1;
+                    let foundIndex2 = aiMessage.indexOf(",", foundIndex);
+                    if (foundIndex2 == -1)
+                        foundIndex2 = aiMessage.indexOf(" ", foundIndex);
+                    if (foundIndex2 == -1)
+                        foundIndex2 = aiMessage.indexOf("\n", foundIndex);
+                    if (foundIndex2 == -1)
+                        foundIndex2 = aiMessage.indexOf("{", foundIndex);
+                    if (foundIndex2 == -1)
+                        foundIndex2 = aiMessage.indexOf("}", foundIndex);
+                    if (foundIndex2 == -1)
+                        foundIndex2 = aiMessage.length;
+                    if (foundIndex2 != -1)
+                        aiVariables[i].value = parseValue(aiMessage.substring(foundIndex, foundIndex2));
+                }
+            }
+        }
+
+        socket.emit('getVars', aiVariables);
+
+    } catch(e) {
+        console.log(e);
+    }
+
+    return aiVariables;
 }
 
 function isNumeric(str) {
@@ -47,11 +146,15 @@ io.on('connection', (socket) => {
 
     let aiVariables = [];
 
-    chatLogs = [{"role": "system", "content": ""}];
+    let chatLogs = [{"role": "system", "content": ""}];
 
     let aiBusy = false;
     // console.log('A user connected');
     
+    socket.on('reste', (msg) => {
+        chatLogs = [{"role": "system", "content": ""}];
+    });
+
     socket.on('chat message', async(msg) => {
 
         if (aiBusy)
@@ -99,7 +202,7 @@ io.on('connection', (socket) => {
         let aiMessage = await doAI(chatLogs);
         chatLogs.push({"role": "assistant", "content": aiMessage});
 
-        io.emit('ai message', aiMessage);
+        socket.emit('ai message', aiMessage);
 
         let searchToken = "Output variables:";
         let outputIndex = aiMessage.indexOf(searchToken);
@@ -114,55 +217,7 @@ io.on('connection', (socket) => {
             if (outputIndex != -1)
                 aiMessage = aiMessage.substring(outputIndex);
         }
-        try {
-            let aiVars = JSON.parse(aiMessage);
-            console.log("aiVars", aiVars);
-            for (key in aiVars)
-            {
-                let found = false;
-                for (let i = 0; i < aiVariables.length; i++)
-                {
-                    console.log("key == aiVariables[i].name" + key + " == " + aiVariables[i].name);
-                    if (key == aiVariables[i].name) {
-                        aiVariables[i].value = aiVars[key];
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found) {
-                    let type = 'string';
-                    let value = aiVars[key];
-                    
-                    const isNum = isNumeric(value);
-
-                    if (isNum) {
-                        try {
-                            if (!isNaN(parseInt(aiVars[key]))) {
-                                value = parseInt(aiVars[key]);
-                                type = 'int'
-                            }
-                        } catch(e) {}
-                        if (type != 'int') {
-                            try {
-                                if (!isNaN(parseFloat(aiVars[key]))) {
-                                    value = parseFloat(aiVars[key]);
-                                    type = 'float'
-                                }
-                            } catch(e) {}
-                        }
-                    }
-
-                    aiVariables.push({name: key, type: type, value: value, defaultValue: value});
-                }
-            }
-            
-            socket.emit('getVars', aiVariables);
-
-        } catch(e) {
-            console.log(e);
-        }
-
+        aiVariables = readVariables(aiMessage, aiVariables, socket);
         aiBusy = false;
     });
 

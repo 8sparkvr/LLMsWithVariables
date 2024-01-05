@@ -3,18 +3,20 @@ import './VariableList.css';
 
 
 
-function VariableList({ handleSetVars, setVariables, variables }) {
+function VariableList({ handleSetVars, setVariables, variables, resetChat }) {
     const [editSelect, setEditSelect] = useState(-1);
 
     const addItem = () => {
-        setVariables([...variables, { name: "variable " + variables.length.toString(), type: 'int', value: 0, defaultValue: 0 }]);
-        handleSetVars(variables);
+        let newVars = [...variables, { name: "variable " + variables.length.toString(), type: 'int', value: 0, defaultValue: 0 }];
+        setVariables(newVars);
+        handleSetVars(newVars);
     };
 
     const removeItem = (index) => {
-        setVariables(variables.filter((_, i) => i !== index));
+        let newVars = variables.filter((_, i) => i !== index);
+        setVariables(newVars);
         setEditSelect(-1);
-        handleSetVars(variables);
+        handleSetVars(newVars);
     };
 
     
@@ -23,7 +25,7 @@ function VariableList({ handleSetVars, setVariables, variables }) {
             return { ...currentItem, value: currentItem.defaultValue };
         });
 
-        setVariables();
+        setVariables(newVariables);
         handleSetVars(newVariables);
     };
 
@@ -154,6 +156,7 @@ function VariableList({ handleSetVars, setVariables, variables }) {
                 {variables.map((item, index) => drawItem(item, index))}
             </div>
             <button class="send-button" onClick={resetVariables}>Reset Variables</button>
+            <button class="send-button" onClick={resetChat}>Reset Chat</button>
         </div>
     );
 

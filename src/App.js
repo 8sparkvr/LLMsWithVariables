@@ -29,15 +29,21 @@ function App() {
     };
     
     const handleSetVars = (vars) => {
+        console.log("handleSetVars", vars);
         socket.emit('setVars', vars);
     };
 
+    const resetChat = () => {
+        setMessages([]);
+        socket.emit("reset");
+    }
+
     return (
         <div className="app">
-            <h1>LLM With Variables</h1>
+            <h1>LLMs With Variables</h1>
             <Chat messages={messages}/>
             <MessageInput onSendMessage={handleSendMessage} />
-            <VariableList handleSetVars={handleSetVars} setVariables={setVariables} variables={variables}/>
+            <VariableList handleSetVars={handleSetVars} setVariables={setVariables} variables={variables} resetChat={resetChat}/>
         </div>
     );
 }
