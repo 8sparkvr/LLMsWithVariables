@@ -1,0 +1,42 @@
+.chat-container {
+    border: 1px solid #ddd;
+    padding: 10px;
+    height: 100%;
+    overflow-y: auto;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding-bottom: 100px;
+}
+
+
+
+.message-ai {
+    background-color: #e0f7fa;
+    color: #006064;
+    margin: 8px 0;
+    padding: 10px;
+    border-radius: 12px;
+    max-width: 70%;
+    word-wrap: break-word;
+    align-self: flex-start;
+}
+
+.message-me {
+    background-color: #e0f7fa;
+    color: #006064;
+    margin: 8px 0;
+    padding: 10px;
+    border-radius: 12px;
+    max-width: 70%;
+    word-wrap: break-word;
+    align-self: flex-start;
+    margin-left: 30%;
+}
+
+/* Differentiate between sent and received messages */
+.message.sent {
+    background-color: #b2ebf2;
+    align-self: flex-end;
+}

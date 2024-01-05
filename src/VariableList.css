@@ -1,0 +1,72 @@
+.variable-list-edit {
+    color: white;
+    border: 1px solid rgb(64, 64, 64);
+    padding: 20px;
+}
+
+.variable-list-item {
+    margin: 1px;
+    padding: 4px;
+    cursor: pointer;
+    color: white;
+}
+.variable-list-item:hover {
+    background-color: rgb(64, 64, 64);
+}
+
+.variable-list-body {
+    width: 200px;
+    position: fixed;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    padding: 20px;
+    background-color: black;
+}
+
+.send-button {
+    margin: 10px;
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: none;
+    background-color: #4caf50;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.send-button:hover {
+    background-color: #388e3c;
+}
+
+
+.message-form {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: #fff;
+    border-top: 1px solid #ddd;
+}
+
+.message-input {
+    flex-grow: 1;
+    padding: 10px;
+    margin-right: 10px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    outline: none;
+}
+
+.send-button {
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: none;
+    background-color: #4caf50;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.send-button:hover {
+    background-color: #388e3c;
+}
