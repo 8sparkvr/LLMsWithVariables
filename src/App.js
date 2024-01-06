@@ -5,7 +5,8 @@ import VariableList from './VariableList';
 import './App.css';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:3000'); // Adjust the URL to match your server
+const socket = io(window.location.origin); // Adjust the URL to match your server
+// https://llmswithvariables-fragrant-log-9133.fly.dev/
 
 function App() {
     const [messages, setMessages] = useState([]);

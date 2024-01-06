@@ -1,23 +1,7 @@
 
-Make more resilient.
-Give reset chat button
-make multi user
-Post somewhere
+Update to support arrays
 
+Better twitter
 
-foreach (variable)
-feed variable into system prompt
-feed variable output into system prompt
-feed 
-
-
-
-Structure:
-
-Var c = Coins("Coins", 5)
-
-
-chat = sfdlsadfjl
-
-sample dailog:
+Make twitter post about it
 
